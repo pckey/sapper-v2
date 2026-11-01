@@ -22,7 +22,20 @@ from __future__ import annotations
 
 import argparse
 import difflib
-import fcntl
+try:
+    import fcntl  # Unix only; provides advisory file locks for concurrent agents
+except ImportError:
+    # Windows fallback: fcntl does not exist. The `locked()` context manager
+    # uses flock purely as an *advisory* lock to serialize concurrent agent
+    # writes. Single-user manual mode on Windows has no concurrency, so a
+    # no-op shim is safe. (The full autonomous legion needs tmux + a Unix
+    # shell anyway and is not supported on native Windows.)
+    import types
+    fcntl = types.SimpleNamespace()
+    fcntl.LOCK_EX = 0
+    fcntl.LOCK_UN = 0
+    fcntl.LOCK_SH = 0
+    fcntl.flock = lambda fd, flags: None
 import json
 import os
 import re
