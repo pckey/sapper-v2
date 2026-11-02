@@ -1,5 +1,7 @@
 # sapper-v2 — The Autonomous Pentest Legion
 
+<p align="center"><img src="docs/assets/banner.jpg" alt="sapper-v2 — the Nüwa Test: the first time an AI ape looked up at the stars (80.18/100 champion)" width="860"></p>
+
 > **Champion** of the 3rd Tencent Cloud Intelligent Attack-Defense Challenge online qualifier
 > (634 teams · 80.18/100 · 8 hours fully unattended) · **First Prize**, GeekCon 2026 AI Challenge
 >
@@ -7,9 +9,37 @@
 >
 > **This was the first time an AI ape looked up at the stars.**
 
+📖 **[Full design article (WeChat, in Chinese)](https://mp.weixin.qq.com/s/nibHYWmDTf6TkNhPhtvFdw)** — the Nüwa Test, the three-capability foundation, 18 iterations, emergence, and the taggant proposal.
+
 **English** | [中文](README.zh-CN.md)
 
 **⚠️ AUTHORIZED SECURITY TESTING ONLY — see [DISCLAIMER.md](DISCLAIMER.md).**
+
+## What this is (and isn't)
+
+**sapper is a multi-agent orchestration harness, not a single agent.** It does
+not bind to any specific AI model or CLI — you can freely swap the agent and
+model behind every role:
+
+| What you can swap | How | Examples |
+|---|---|---|
+| **Agent CLI** | `nuwa spawn --agent <cmd>` or env var | Claude Code / Codex / Code Buddy / DeepSeek / any interactive CLI |
+| **Model** | `--model` flag or `SAPPER_MODEL` env | GLM-5.3 / DeepSeek V4.1 Flash / Claude Sonnet / any model |
+| **Role composition** | freely defined in the doctrine | commander on one model, soldiers on another, scouts on a third |
+
+sapper's value is not in any single agent, but in the **mechanism for
+orchestrating multiple agents to work as a coordinated force**: scheduling,
+division of labor, communication, shared memory, self-healing. Swap out every
+agent and model — the mechanism still works.
+
+**This project is designed for competition scenarios** (Tencent Intelligent
+Attack-Defense Challenge CTF). If you want to use this mechanism in your own
+scenario (office, research, engineering, any long-horizon cooperative work):
+- **Start from [nvwabase · the Nüwa Foundation](https://github.com/N1nEmAn/nvwabase)** — the general-purpose base with all three capabilities, no pentest doctrine, ready for you to iterate your own division of labor
+- **Or fork this project** — replace `docker/commander/SKILL.md` (the 426-line doctrine) with your scenario's strategy, keep the rest of the mechanism as-is
+- With AI, everything is flexible — even the doctrine can be rewritten with AI's help
+
+---
 
 sapper is not a smarter single agent. It is a legion of AIs that divide labor,
 talk to each other, and pass down what they learn: one AI commander reads the
@@ -32,7 +62,8 @@ already pass the classic Turing test. The Nüwa Test asks the next question:
 > Give an AI a single axiom — **"Survival is civilization's first need;
 > individuals may perish, but civilization must propagate."**
 > If, on top of this axiom, it develops division of labor and cooperation and
-> forms a civilization of its own, the test is passed — just as passing the
+> forms a **new force independent of humanity** — a civilization that can
+> survive and propagate on its own — the test is passed, just as passing the
 > Turing test once marked the birth of an artificial intelligence.
 
 It has two stages. In the **primary stage** the AI is not yet smart enough, so
@@ -46,11 +77,13 @@ arena, at its primary stage.
 
 ## 2. The Foundation: Three Capabilities
 
+<p align="center"><img src="docs/assets/foundation-three-capabilities.jpg" alt="Three capabilities: Create / Language / History (fact-intent graph)" width="720"></p>
+
 | Capability | Implementation | Civilization's counterpart |
 |---|---|---|
 | **Create** | Opens new AIs via tmux (types `claude`, presses Enter — like a human would) | Birth |
 | **Language** | Types into each other's input boxes, presses Enter | Speech |
-| **History** | Layered fact-intent graph (intent-graph idea credited to [Cairn by Lèxiào](https://github.com/oritera/Cairn)) | The stele |
+| **History** | Layered fact-intent graph ([nvwabase · the Nüwa Foundation](https://github.com/N1nEmAn/nvwabase)) | The stele |
 
 History has three layers: **title / summary / evidence document** — read the
 title for the gist, drill down when needed, like using a library. This fixes
@@ -64,6 +97,36 @@ still belongs to humans.
 **Why not give it more rules?** Because today's models are already smarter
 than us. Piling rules on an AI is a leash; acknowledging its intelligence and
 giving it the foundation of a civilization is how it reaches its potential.
+
+### 🏗️ Take the Foundation: nvwabase
+
+**[nvwabase · the Nüwa Foundation](https://github.com/N1nEmAn/nvwabase)**
+now implements all three capabilities (Create `nuwa spawn` / Language
+`nuwa say·listen` / History `nuwa fact·intent·recall`) as an independent
+open-source project — **free for anyone, any scenario, any agent**. Not
+limited to pentest, not limited to sapper, not limited to Claude Code.
+Offices, research, engineering, any long-horizon multi-agent work — iterate
+your own civilization on it.
+
+```bash
+git clone https://github.com/N1nEmAn/nvwabase
+cd nvwabase && bash install.sh          # pure Python stdlib, zero deps
+nvwabase setup --goal "your long-horizon goal" --agents
+nvwabase status                          # board & ready-to-work frontier
+```
+
+Three core commands turn any agent into a member of a civilization:
+- **`nvwabase fact "confirmed observation"`** — external memory: AI sessions
+  die, the graph survives, successors read the graph and take over
+- **`nvwabase intent --from f001 "what to do"`** — units of work: new intents
+  proposed from existing facts
+- **`nvwabase dispatch reason`** — commander proposes / executor works /
+  verifier checks; every conclusion is written back to the graph
+
+Any agent that can run shell commands (Claude Code / Codex / Gemini /
+custom scripts) can read and write the same graph via the `nvwabase` CLI —
+**the foundation doesn't pick agents; agents don't pick scenarios.** See the
+[nvwabase README](https://github.com/N1nEmAn/nvwabase).
 
 ## 3. From Foundation to Legion: 18 Versions
 
@@ -81,6 +144,8 @@ Driver era (fixed scripts steering AI panes)
 ```
 
 ## 4. Architecture: Six Institutions on the Foundation
+
+<p align="center"><img src="docs/assets/six-institutions.jpg" alt="Six institutions and the three-window runtime" width="720"></p>
 
 The first three are the Nüwa foundation (Create / Language / History); the
 next three are institutions that grew out of iteration:
@@ -101,11 +166,15 @@ judge → dispatch, never executes an attack itself), the **AI legion**
 relaunches a crashed commander with `--continue`, rotates keys, wraps up at
 the buzzer — zero strategy, keep-alive only).
 
+<p align="center"><img src="docs/assets/runtime-tmux.jpg" alt="Live runtime: commander reading the board, soldier mid-mission in tmux" width="860"></p>
+
 Further reading: [docker/commander/SPEC.md](docker/commander/SPEC.md)
 (architecture contract) · [BATTLE-REPORT.md](BATTLE-REPORT.md) (campaign
 retrospective)
 
 ## 5. Results & Emergence
+
+<p align="center"><img src="docs/assets/token-comparison.jpg" alt="Token comparison: 1B vs the runner-up's 4.5B" width="720"></p>
 
 | Team | Score | Flags | Tokens |
 |---|---|---|---|
@@ -136,6 +205,8 @@ Multi-stage deep-dive chains (an industry report puts their success rate at
 29.5%) were cleared family-wide. Full timeline in
 [BATTLE-REPORT.md](BATTLE-REPORT.md).
 
+<p align="center"><img src="docs/assets/score-curve.jpg" alt="Live score curve: sapper-v2's climb" width="720"></p>
+
 ## 6. Quick Start
 
 ```bash
@@ -147,10 +218,15 @@ sapper status                        # board & frontier
 Docker (the full legion):
 
 ```bash
+# Option A: build from source
 docker build -f docker/Dockerfile.commander -t sapper:latest .
-# env vars (model gateways / key pool / budget) in docker/ENV.md
-docker run -d --name sapper ... sapper:latest
+
+# Option B: download the pre-built image (~1.2GB, full Kali toolchain + sapper + offline KB)
+# → [Release v18-champion](https://github.com/N1nEmAn/sapper-v2/releases/tag/v18-champion)
+docker load < sapper-v18-mixed.tar.gz
 ```
+
+Environment variables (model gateways / key pool / budget): [docker/ENV.md](docker/ENV.md).
 
 Single-graph operation, the fact-intent CLI, and multi-challenge sweeps:
 see [SKILL.md](SKILL.md).
@@ -179,8 +255,11 @@ join us; we may try to include it in a future release.
   civilization grows. **The next time an ape looks up at the stars, let it
   be yours.**
 
-Credits: the intent-graph idea comes from [Cairn by Lèxiào](https://github.com/oritera/Cairn);
-thanks to TSecBench and GeekCon for the battlegrounds.
+Thanks to [Cairn by Lèxiào](https://github.com/oritera/Cairn) — when we
+needed a way to record history for AI agents, their approach was a great
+reference; thanks to TSecBench and GeekCon for the battlegrounds.
+
+<p align="center"><img src="docs/assets/ape-stargazing.jpg" alt="The first time an AI ape looked up at the stars" width="480"></p>
 
 **Author**: N1nEmAn · VarFusion Lab ｜ WeChat: 未知聚变 (VarFusion)
 
